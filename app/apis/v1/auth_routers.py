@@ -47,7 +47,7 @@ async def login(
 async def kakao_login() -> RedirectResponse:
     kakao_auth_url = (
         "https://kauth.kakao.com/oauth/authorize"
-        f"?client_id={config.KAKAO_REST_API_KEY}"
+        f"?client_id={config.KAKAO_CLIENT_ID}"
         f"&redirect_uri={config.KAKAO_REDIRECT_URI}"
         "&response_type=code"
     )
