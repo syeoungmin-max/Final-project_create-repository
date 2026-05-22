@@ -11,11 +11,13 @@ interface Props {
 
 export default function ChatSidebar({ selectedId, onSelect, onNewSession, refreshKey }: Props) {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
+    setLoadError(false);
     getSessions()
       .then((res) => setSessions(res.data))
-      .catch(() => {});
+      .catch(() => setLoadError(true));
   }, [refreshKey]);
 
   const handleNew = async () => {
@@ -39,6 +41,9 @@ export default function ChatSidebar({ selectedId, onSelect, onNewSession, refres
         </button>
       </div>
       <ul className="session-list">
+        {loadError && (
+          <li className="session-error">목록을 불러오지 못했습니다.</li>
+        )}
         {sessions.map((s) => (
           <li
             key={s.id}

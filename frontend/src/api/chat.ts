@@ -36,6 +36,8 @@ export const streamMessage = async (
   let buffer = "";
   let currentEvent = "";
 
+  let streamCompleted = false;
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -64,6 +66,7 @@ export const streamMessage = async (
           onError(parsed.detail ?? "알 수 없는 오류가 발생했습니다.");
           return;
         } else if (currentEvent === "done") {
+          streamCompleted = true;
           onDone(parsed.message_id, parsed.title ?? null);
           return;
         } else if (parsed.chunk !== undefined) {
@@ -73,5 +76,9 @@ export const streamMessage = async (
         // ignore malformed lines
       }
     }
+  }
+
+  if (!streamCompleted) {
+    onError("연결이 끊어졌습니다. 다시 시도해주세요.");
   }
 };
