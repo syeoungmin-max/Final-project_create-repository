@@ -1,6 +1,6 @@
 # AI Healthcare Project Template
 
-이 프로젝트는 AI 모델 추론(Inference) 워커와 FastAPI API 서버를 통합한 서비스 템플릿입니다. 
+이 프로젝트는 AI 모델 추론(Inference) 워커와 FastAPI API 서버를 통합한 서비스 템플릿입니다.
 현대적인 Python 패키지 관리 도구인 `uv`와 컨테이너화 도구인 `Docker`를 활용하여 일관된 개발 및 배포 환경을 제공합니다.
 
 ---
@@ -69,11 +69,11 @@ uv sync --group ai   # AI 워커용
 ### 2. 환경 변수 설정
 
 `envs/` 디렉토리에 있는 예시 파일을 복사하여 `.env` 파일을 생성합니다.
-- 로컬용 
+- 로컬용
     ```bash
     cp envs/example.local.env envs/.local.env
     ```
-- 배포용 
+- 배포용
     ```bash
     cp envs/example.prod.env envs/.prod.env
     ```
@@ -86,17 +86,34 @@ uv sync --group ai   # AI 워커용
 
 ### 1. 로컬 및 개발 환경
 
-#### Docker Compose로 전체 스택 실행
+#### Docker Compose로 BE 스택 실행 (기본)
 
-모든 서비스(API, Worker, DB, Redis, Nginx)를 한 번에 실행합니다.
+BE 서비스(API, Worker, DB, Redis, Nginx)를 한 번에 실행합니다. `frontend` 컨테이너는 기본에서 제외되어 있어 포트 3000이 비어있고, 프론트엔드는 `npm run dev`로 HMR 개발하면 됩니다.
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 실행 후 다음 주소로 접속 가능합니다:
 - **API 서버**: [http://localhost/api/docs](http://localhost/api/docs) (Swagger UI)
 - **Nginx**: 80 포트를 통해 API 서버로 요청을 전달합니다.
+
+#### 프론트엔드 개발 (HMR)
+
+```bash
+cd frontend
+npm run dev   # http://localhost:3000 — Vite HMR
+```
+
+#### Frontend 빌드본까지 포함해 전체 실행 (통합 확인용)
+
+prod-like 빌드본을 nginx로 서빙하는 `frontend` 컨테이너까지 같이 띄우려면 `full` 프로필을 사용합니다.
+
+```bash
+docker compose --profile full up -d --build
+```
+
+이 경우 포트 3000은 컨테이너가 점유하므로 dev 서버와 동시에 띄울 수 없습니다.
 
 #### 로컬에서 개별 실행 (개발용)
 
@@ -138,7 +155,7 @@ chmod +x scripts/deployment.sh
 3. 배포할 서비스 선택 (FastAPI, AI-Worker) 및 버전(Tag)
 4. SSH 키 파일명 및 EC2 IP 주소
 5. https 사용여부
-   - 5-1. https인 경우 도메인 추가 입력  
+   - 5-1. https인 경우 도메인 추가 입력
 
 #### SSL(HTTPS) 설정 (Certbot)
 도메인을 연결하고 HTTPS를 적용하려면 `scripts/certbot.sh`를 사용합니다.
